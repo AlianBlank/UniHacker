@@ -38,10 +38,18 @@ namespace UniHacker
         }
 #endif
 
-        public static bool IsAdministrator =>
-            RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
-            new WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator) :
-            Mono.Unix.Native.Syscall.geteuid() == 0;
+        public static bool IsAdministrator {
+            get{
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)){
+                   return new WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator);
+                }else{
+                    if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX)){
+                        return Mono.Unix.Native.Syscall.geteuid() == 0;
+                    }
+                    return true;
+                }
+            }
+        }
 
         public static string GetExtension(bool dot = true)
         {
